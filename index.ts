@@ -108,3 +108,18 @@ app.get("/depth",(req:any,res:any) => {
     }
     res.json({depth});
 })
+
+
+app.get("/balances/:userId",(req,res)=>{
+    const userId=req.params.userId;
+    const user=users.find(x=>x.id===userId);
+    if (!user){
+        return res.json({
+            USD:0,
+            [TICKER]:0
+        })
+    }
+    res.json({balances:user.balances});
+})
+
+app.get("/quote")
