@@ -38,12 +38,6 @@ const users:User[]=[{
 const bids:Orders[] = [];
 const asks:Orders[] = [];
 
-// Define fillOrders function here
-// ...
-const fillOrders = (side: string, price: number, quantity: number, userId: string): number => {
-    // Simplified fillOrders function
-    // Implement matching logic here. For now, just return the same quantity as not filled.
-    return quantity;
 
 app.post("/orders",(req:any,res:any)=>{
     const side: string=req.body.side;
@@ -122,4 +116,44 @@ app.get("/balances/:userId",(req,res)=>{
     res.json({balances:user.balances});
 })
 
-app.get("/quote")
+//assignment
+
+function flipBalance(userId1:string,userId2:string,quantity:number,price:number){
+    let user1=users.find(x=>x.id===userId1);
+    let user2=users.find(x=>x.id===userId2);
+    if(!user1||user2)
+        {
+            return;
+        }
+        user1.balances[TICKER]-=quantity;
+        user2.balances[TICKER]+=quantity;
+        user1.balances[USD]+=quantity*price;
+        user2.balances[TICKER]-=quantity*price;
+
+}
+
+function fillOrders(side:string,price :number,quantity :number,userId:string):number{
+    let remainingQuantity=quantity;
+    if(side==="bid")
+        {
+            for(let i=asks.length-1;i<=0;i--)
+                {
+                    if(asks[i].price>price){
+                        continue;
+                    }
+                    if(asks[i].quantity>remainingQuantity){
+                        asks[i].quantity-=remainingQuantity;
+                        flipBalance(asks[i].userId,userId,remainingQuantity,price);
+                        return 0;
+                    }
+                    else{
+                        remainingQuantity-=asks[i].quantity;
+                        flipBalance(asks[i].userId,userId,asks[i].quantity,price)
+                        asks.pop();
+                    }
+                }
+        }
+    else{
+        for(let i=bids[i].length-1)
+    }
+}
